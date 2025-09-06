@@ -1,25 +1,32 @@
 {
-  "name": "electron-quick-start",
+  "name": "code-editor",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Code Editing App",
   "main": "main.js",
   "scripts": {
     "start": "nodemon --ext js,html,css --exec electron .",
-    "build": "electron-builder"
+    "build": "electron-builder",
+    "release": "electron-builder --publish always"
   },
   "build": {
     "appId": "com.ec.codeeditor",
     "productName": "CodeEditor",
-    "files": ["**/*"],
-    "directories": {"buildResources": "assets"},
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
+    "files": [
+      "**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
     "icon": "assets/icon",
     "win": {
       "target": [
         {
           "target": "nsis"
-        },
-        {
-          "target": "msi"
         }
       ]
     },
@@ -39,7 +46,7 @@
       "icon": "assets/icon.png"
     }
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/ahmed-elsakka/code-editor",
   "keywords": [
     "Electron",
     "quick",
@@ -53,5 +60,9 @@
     "electron": "^36.3.2",
     "electron-builder": "^26.0.12",
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.6.2"
   }
 }

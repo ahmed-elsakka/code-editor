@@ -1,7 +1,11 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron')
+const { autoUpdater } = require('electron-updater');
 const path = require('node:path')
 const fs = require("fs")
+
+autoUpdater.autoDownload  = false;
+
 
 function createWindow () {
   // Create the browser window.
@@ -17,6 +21,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  Menu.setApplicationMenu(null)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -27,6 +32,7 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
+  autoUpdater.checkForUpdatesAndNotify();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -73,5 +79,30 @@ ipcMain.on("file-save", (event, content) => {
     }
   }
 });
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+
+autoUpdater.on('update-available', (info) => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Available',
+    message: `A new version (${info.version}) is available. Do you want to download it now?`,
+    buttons: ['Yes', 'Later']
+  }).then((result) => {
+    if (result.response === 0) { // User clicked "Yes"
+      autoUpdater.downloadUpdate();
+    }
+  });
+});
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Ready',
+    message: 'The update has been downloaded. Restart the app to apply it now?',
+    buttons: ['Restart', 'Later']
+  }).then((result) => {
+    if (result.response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+});
+
